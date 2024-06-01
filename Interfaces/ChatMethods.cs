@@ -124,7 +124,7 @@ public static class ChatMethods
             shop = ModAsset.Icon_Edit;
             shopFrame = shop.Frame();
             foreach (var info in from a in HandleAssets.IconInfos
-                     where a.NPCTypes.Contains(-1) && a.Available() && a.Texture != "" && a.Texture != "Head"
+                     where a.NPCTypes.Contains(-1) && a.Available() && a.Texture != "" && !a.IsSpecialIcon
                      select a) {
                 if (info.IconType == IconType.Shop) {
                     shop = ModContent.Request<Texture2D>(info.Texture);
@@ -147,47 +147,30 @@ public static class ChatMethods
 
         var npc = Main.npc[Main.LocalPlayer.talkNPC];
         int type = npc.type;
-        // Shop
-        int head = (!TownNPCProfiles.Instance.GetProfile(npc, out ITownNPCProfile profile))
+        int head = !TownNPCProfiles.Instance.GetProfile(npc, out var profile)
             ? NPC.TypeToDefaultHeadIndex(type)
             : profile.GetHeadTextureIndex(npc);
+
+        // Shop Default Icon
         shop = ModAsset.Icon_Default;
         if (NPCID.Sets.IsTownPet[type]) {
-            shop = TextureAssets.NpcHead[NPC.TypeToDefaultHeadIndex(type)];
-            if (head > 0 && head < NPCHeadLoader.NPCHeadCount && !NPCHeadID.Sets.CannotBeDrawnInHousingUI[head]) {
-                shop = TextureAssets.NpcHead[head];
-            }
+            shop = GetHeadOrDefaultIcon(head);
+            if (shop == ModAsset.Icon_Default_Extra)
+                shop = GetHeadOrDefaultIcon(NPC.TypeToDefaultHeadIndex(type));
         }
 
-        // Extra
-        extra = ModAsset.Icon_Default;
-        if (head > 0 && head < NPCHeadLoader.NPCHeadCount && !NPCHeadID.Sets.CannotBeDrawnInHousingUI[head]) {
-            extra = TextureAssets.NpcHead[head];
-        }
+        // Extra Default Icon
+        extra = GetHeadOrDefaultIcon(head);
 
         foreach (var info in from a in HandleAssets.IconInfos
                  where a.NPCTypes.Contains(type) && a.Available() && a.Texture != ""
                  select a) {
             if (info.IconType == IconType.Shop) {
-                shopCustomOffset = info.CustomOffset;
-                if (info.Texture == "Head") {
-                    shop = TextureAssets.NpcHead[head];
-                }
-                else {
-                    shop = ModContent.Request<Texture2D>(info.Texture);
-                    shopFrameOverride = info.Frame?.Invoke();
-                }
+                info.GetIconParameters(out shopCustomOffset, out shop, out shopFrameOverride, head);
             }
 
             if (info.IconType == IconType.Extra) {
-                extraCustomOffset = info.CustomOffset;
-                if (info.Texture == "Head") {
-                    extra = TextureAssets.NpcHead[head];
-                }
-                else {
-                    extra = ModContent.Request<Texture2D>(info.Texture);
-                    extraFrameOverride = info.Frame?.Invoke();
-                }
+                info.GetIconParameters(out extraCustomOffset, out extra, out extraFrameOverride, head);
             }
         }
 
@@ -708,4 +691,12 @@ public static class ChatMethods
 
     public static string GetChatDialog(int l) =>
         Language.GetTextValueWith($"LegacyDialog.{l}", Lang.CreateDialogSubstitutionObject());
+
+    public static Asset<Texture2D> GetHeadOrDefaultIcon(int head) {
+        if (head > 0 && head < NPCHeadLoader.NPCHeadCount && !NPCHeadID.Sets.CannotBeDrawnInHousingUI[head]) {
+            return TextureAssets.NpcHead[head];
+        }
+
+        return ModAsset.Icon_Default_Extra;
+    }
 }
