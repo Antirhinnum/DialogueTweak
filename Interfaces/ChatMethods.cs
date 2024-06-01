@@ -117,6 +117,9 @@ public static class ChatMethods
         out Func<float> extraCustomOffset) {
         shopCustomOffset = null;
         extraCustomOffset = null;
+        Rectangle? shopFrameOverride = null;
+        Rectangle? extraFrameOverride = null;
+
         // -1即标牌绘制
         if (i == -1) {
             extra = null;
@@ -127,23 +130,19 @@ public static class ChatMethods
                      where a.NPCTypes.Contains(-1) && a.Available() && a.Texture != "" && !a.IsSpecialIcon
                      select a) {
                 if (info.IconType == IconType.Shop) {
-                    shop = ModContent.Request<Texture2D>(info.Texture);
-                    shopFrame = info.Frame?.Invoke() ?? shop.Frame();
-                    shopCustomOffset = info.CustomOffset;
+                    // 这里head传-1没问题，会被GetHeadOrDefaultIcon处理
+                    info.GetIconParameters(out shopCustomOffset, out shop, out shopFrameOverride, -1);
                 }
 
                 if (info.IconType == IconType.Extra) {
-                    extra = ModContent.Request<Texture2D>(info.Texture);
-                    extraFrame = info.Frame?.Invoke() ?? extra.Frame();
-                    extraCustomOffset = info.CustomOffset;
+                    info.GetIconParameters(out extraCustomOffset, out extra, out extraFrameOverride, -1);
                 }
             }
 
+            shopFrame = shopFrameOverride ?? shop.Frame();
+            extraFrame = extraFrameOverride ?? extra.Frame();
             return;
         }
-
-        Rectangle? shopFrameOverride = null;
-        Rectangle? extraFrameOverride = null;
 
         var npc = Main.npc[Main.LocalPlayer.talkNPC];
         int type = npc.type;

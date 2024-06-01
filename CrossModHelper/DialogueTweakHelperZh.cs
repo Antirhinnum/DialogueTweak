@@ -29,7 +29,7 @@ public static class DialogueTweakHelperZh
     /// </summary>
     /// <param name="replacementType">你想要替代的图标类型</param>
     /// <param name="npcType">你需要表明你想要覆盖的NPC对象的ID，使用<see cref="ModContent.NPCType"/>来获取你的Mod中相应NPC的ID. 如果要覆盖标牌请使用<b>-1</b></param>
-    /// <param name="texturePath">你需要表明用于替代图标的贴图. 请输入贴图路径. 如果你想要使用NPC的头像贴图替换Shop和Extra按钮图标请直接输入<b>Head</b></param>
+    /// <param name="texturePath">你需要表明用于替代图标的贴图. 请输入贴图路径. 如果你想要使用NPC的头像贴图请直接输入<b>Head</b>. 如果要使用当前任务鱼作为图标请输入 <b>QuestFish</b></param>
     /// <param name="availability">你可以决定是否应用该替代. 这对于有多种功能并想要不同的图标贴图的NPC来说十分有用</param>
     /// <param name="frame">你可以自定义覆盖贴图的绘制帧. 以在不同状况下显示一个贴图的不同部分</param>
     /// <param name="customTextOffset">您可以自定义包含文本的边界框的左侧到按钮框的左侧的距离。边界框(boundingBox)是整个按钮中除图标外的右侧部分，文本将绘制在这个隐形的框的中心。参考“how_offset_works.png”中的图文解释</param>

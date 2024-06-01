@@ -28,7 +28,7 @@ public static class DialogueTweakHelper
     /// </summary>
     /// <param name="replacementType">Which icon type you are replacing</param>
     /// <param name="npcType">Your NPC ID(s) is needed. Use <see cref="ModContent.NPCType"/> to submit your ID. Use <b>-1</b> if you want to acess signs.</param>
-    /// <param name="texturePath">You have to specify the texture that replaces icons. Use your texture's path. Use <b>Head</b> for button icons if you want to replace</param>
+    /// <param name="texturePath">You have to specify the texture that replaces icons. Use your texture's path. Use <b>Head</b> if you want to display the NPC's head. Use <b>QuestFish</b> if you want to display available quest fish.</param>
     /// <param name="availability">You can decide if your replacement is used. This is useful if your NPC has multiple functions that display different icons.</param>
     /// <param name="frame">You can customize the frame of the texture. It is useful to display different parts of the texture in different situations.</param>
     /// <param name="customTextOffset">You can customize the distance from the left side of the box containing the text to the left side of the button. The invisible box is the right part of the entire button excluding the icon, and the text will be drawn in its center. Check "how_offset_works.png" for image explanation</param>

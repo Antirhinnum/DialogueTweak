@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DialogueTweak.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
@@ -45,14 +46,8 @@ internal class IconInfo
         IconType = iconType;
         NPCTypes = npcTypes ?? [NPCID.None];
         _textureInternal = texture;
-        if (!Main.dedServ && !ModContent.HasAsset(Texture) && Texture != "") {
-            // 是Shop, Extra图标，但不是特殊（动态）图标而且是给NPC用的
-            bool notSpecialIcons = iconType is IconType.Shop or IconType.Extra && !SpecialIconNames.Contains(Texture);
-            // 是Happiness, Back，这俩不接受特殊（动态）图标
-            bool isHappinessOrBackIcon = iconType is IconType.Happiness or IconType.Back;
-
-            if (notSpecialIcons || isHappinessOrBackIcon)
-                DialogueTweak.Instance.Logger.Warn($"Texture path {Texture} is missing.");
+        if (!Main.dedServ && !ModContent.HasAsset(Texture) && Texture != "" && !IsSpecialIcon) {
+            DialogueTweak.Instance.Logger.Warn($"Texture path {Texture} is missing.");
         }
 
         Available = () => true;
@@ -66,10 +61,10 @@ internal class IconInfo
         shopCustomOffset = CustomOffset;
         switch (Texture) {
             case "Head":
-                texture = TextureAssets.NpcHead[head];
+                texture = ChatMethods.GetHeadOrDefaultIcon(head);
                 break;
             // 有任务鱼未完成时显示任务鱼，否则显示NPC头像
-            case "QuestFishOrHead":
+            case "QuestFish":
                 if (!Main.anglerQuestFinished && Main.anglerQuestItemNetIDs.IndexInRange(Main.anglerQuest)) {
                     int fishId = Main.anglerQuestItemNetIDs[Main.anglerQuest];
                     if (TextureAssets.Item.IndexInRange(fishId)) {
@@ -79,7 +74,7 @@ internal class IconInfo
                 }
 
                 // 没有完成任务或者任务物品不存在
-                texture = TextureAssets.NpcHead[head];
+                texture = ChatMethods.GetHeadOrDefaultIcon(head);
                 break;
             default:
                 texture = ModContent.Request<Texture2D>(Texture);
